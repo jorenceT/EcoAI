@@ -833,39 +833,39 @@
 (disable-self)
 )
 
-(defrule
-(player-valid any-ally)
-(game-time == 10)
-(random-number > 8)
-=>
-(chat-to-player this-any-ally "107 I will pay tribute to thee with all I can find.")
-(chat-to-player this-any-ally "Send 2 for thine to cease tribute within 2 minutes")
-(disable-self)
-)
+;(defrule
+;(player-valid any-ally)
+;(game-time == 10)
+;(random-number > 8)
+;=>
+;(chat-to-player this-any-ally "107 I will pay tribute to thee with all I can find.")
+;(chat-to-player this-any-ally "Send 2 for thine to cease tribute within 2 minutes")
+;(disable-self)
+;)
 
-(defrule
-(game-time == 140)
-(not(taunt-detected any-ally 2))
-(random-number > 8)
-(player-valid any-ally)
-=>
-(set-goal 8 3)
-(chat-to-player my-player-number "going to sling")
-(disable-self)
-)
+;(defrule
+;(game-time == 140)
+;(not(taunt-detected any-ally 2))
+;(random-number > 8)
+;(player-valid any-ally)
+;=>
+;(set-goal 8 3)
+;(chat-to-player my-player-number "going to sling")
+;(disable-self)
+;)
 
-(defrule
-(or(or(not(player-valid any-ally))
-(random-number < 9))
-(or(taunt-detected any-ally 2)
-(false)))
-(or(game-time > 300)
-(player-number 1))
-=>
-(chat-to-player my-player-number "not going to sling")
-(set-goal 8 2)
-(disable-self)
-)
+;(defrule
+;(or(or(not(player-valid any-ally))
+;(random-number < 9))
+;(or(taunt-detected any-ally 2)
+;(false)))
+;(or(game-time > 300)
+;(player-number 1))
+;=>
+;(chat-to-player my-player-number "not going to sling")
+;(set-goal 8 2)
+;(disable-self)
+;)
 
 (defrule
 (taunt-detected any-ally 107)
