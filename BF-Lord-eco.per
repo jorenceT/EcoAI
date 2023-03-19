@@ -140,7 +140,7 @@
    (set-strategic-number sn-minimum-boar-hunt-group-size 0) ; Default 5. Alteredd below to be correctly 8 at the right time.
    (set-strategic-number sn-minimum-boar-lure-group-size 1000) ; Default 0. Altered below to be correctly 1 at the right time.
    ; Drop distance, 30 is a good default, most boar are set to spawn up to 22 distance away, and this adds a bit extra for wandering.
-   (set-strategic-number sn-maximum-hunt-drop-distance 30) ; Default -1!
+   (set-strategic-number sn-maximum-hunt-drop-distance 50) ; Default -1!
    (disable-self)
 )
 
@@ -149,19 +149,83 @@
 ;/////////////////////////////////////////////////
 
 ; Loom and 8 villagers (and a boar in range; some maps miss them out, this easily solves it for any map type)
+
+
 (defrule
    
    (unit-type-count-total villager >= 10) ; This is static and set to 8 since we always need 8 for most efficient hunting
-   (strategic-number sn-enable-boar-hunting != 2) ; Boar only?
-   (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance) ; New check, have we any boar within 30 distance?
+   (strategic-number sn-enable-boar-hunting == 3) ; Boar only?
+   (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance) ; New check, have we any boar within 50 distance?
    (dropsite-min-distance boar-hunting != -1) ; Some boars available
 ;   (dropsite-min-distance boar-hunting != 255) ; Some boars available (Redundant with first check)
 =>
-   (chat-local-to-self "[Hunting] Villagers at 8 with loom and a Boar in range, forced Boar hunting!")
+   (chat-to-all "hunting boar active")
+   (set-strategic-number sn-enable-boar-hunting 1) ; Boar only
+   (disable-self)
+)
+
+
+(defrule
+   (not (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance)) ; New check, have we any boar within 50 distance?
+=>
+   (chat-to-all "hunting boar de-active")
    (set-strategic-number sn-enable-boar-hunting 2) ; Boar only
+   (disable-self)
+)
+
+
+;(defrule
+   
+;   (unit-type-count-total villager >= 10) ; This is static and set to 8 since we always need 8 for most efficient hunting
+ ;  (strategic-number sn-enable-boar-hunting != 3) ; Boar only?
+ ;  (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance) ; New check, have we any boar within 50 distance?
+ ;  (dropsite-min-distance boar-hunting != -1) ; Some boars available
+;   (dropsite-min-distance boar-hunting != 255) ; Some boars available (Redundant with first check)
+;=>
+ ;  (chat-to-all "hunting first boar")
+;   (chat-local-to-self "[Hunting] Villagers at 8 with loom and a Boar in range, forced Boar hunting!")
+ ;  (set-strategic-number sn-enable-boar-hunting 3) ; Boar only
+ ;  (set-strategic-number sn-minimum-number-hunters 1) ; increased so priority is increased.
+  ; (set-strategic-number sn-minimum-boar-lure-group-size 1) ; Increase lure group size.
+;)
+
+
+(defrule
+   
+   (unit-type-count-total villager >= 10) ; This is static and set to 8 since we always need 10 for most efficient hunting
+   ;(strategic-number sn-enable-boar-hunting == 1) ; Boar only?
+   (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance) ; New check, have we any boar within 50 distance?
+ ;  (dropsite-min-distance boar-hunting != -1) ; Some boars available
+;   (dropsite-min-distance boar-hunting != 255) ; Some boars available (Redundant with first check)
+   (up-compare-goal mysheep <= 0)
+=>
+   (chat-to-all "hunting boar")
+   (chat-local-to-self "[Hunting] Villagers at 6 with loom and a Boar in range, forced Boar hunting!")
+   ;(set-strategic-number sn-enable-boar-hunting 2) ; Boar only
    (set-strategic-number sn-minimum-number-hunters 1) ; increased so priority is increased.
    (set-strategic-number sn-minimum-boar-lure-group-size 1) ; Increase lure group size.
+   (disable-self)
 )
+
+(defrule
+   
+   (unit-type-count-total villager >= 15) ; This is static and set to 8 since we always need 10 for most efficient hunting
+   ;(strategic-number sn-enable-boar-hunting == 1) ; Boar only?
+   (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance) ; New check, have we any boar within 50 distance?
+;   (dropsite-min-distance boar-hunting != -1) ; Some boars available
+;   (dropsite-min-distance boar-hunting != 255) ; Some boars available (Redundant with first check)
+   (up-compare-goal mysheep <= 0)
+=>
+   (chat-to-all "hunting second boar")
+   (chat-local-to-self "[Hunting] Villagers at 6 with loom and a Boar in range, forced Boar hunting!")
+   ;(set-strategic-number sn-enable-boar-hunting 2) ; Boar only
+   (set-strategic-number sn-minimum-number-hunters 1) ; increased so priority is increased.
+   (set-strategic-number sn-minimum-boar-lure-group-size 1) ; Increase lure group size.
+   (disable-self)
+)
+
+
+
 
 ; Change to deer/boar hunting, but this might include late boars or even boars we failed to get in Dark Age (eg; were just outside TC range)
 (defrule
@@ -260,6 +324,7 @@
    (up-compare-goal 405 > 0)
    (unit-type-count villager-farmer > 0)
 =>
+   (chat-to-all "farmers to hunters")
    (up-retask-gatherers 907 c: 405) ; Retask the farmers (907) only to go and get boar. This stops hunters doing it.
    (up-chat-data-to-self "[Hunting] Reassigning farmers to Boar Hunting, want: [%d]" g: 405)
 )
@@ -273,6 +338,7 @@
    )
    (strategic-number sn-minimum-number-hunters == 8)
 =>
+   (chat-to-all "making a hunter")
    (set-strategic-number sn-minimum-number-hunters 1)
    (chat-local-to-self "[Hunting] Hunting a boar; making 1 minimum hunter again.")
 ) ; From FD
@@ -295,6 +361,7 @@
 (up-pending-objects c:< villager > 0)
 (dropsite-min-distance boar-hunting > 6)
 =>
+(chat-to-all "final bor hunting")
 (set-strategic-number sn-enable-boar-hunting 2)
 (set-strategic-number sn-minimum-number-hunters 1)
 (set-strategic-number sn-minimum-boar-hunt-group-size 1)
@@ -308,6 +375,7 @@
 (up-pending-objects c:< villager > 0)
 (dropsite-min-distance boar-hunting < 7)
 =>
+(chat-to-all "final bor hunting type 2")
 (set-strategic-number sn-minimum-number-hunters 7)
 (set-strategic-number sn-enable-boar-hunting 2)
 (set-strategic-number sn-minimum-boar-hunt-group-size 7)
@@ -321,6 +389,7 @@
 (up-pending-objects c:< villager > 0)
 (dropsite-min-distance boar-hunting > 8)
 =>
+(chat-to-all "final bor hunting type 3")
 (set-strategic-number sn-minimum-number-hunters 2)
 (set-strategic-number sn-enable-boar-hunting 2)
 (set-strategic-number sn-minimum-boar-hunt-group-size 2)
@@ -329,8 +398,9 @@
 
 
 (defrule
-(unit-type-count-total villager > 21)
+(unit-type-count-total villager > 15)
 =>
+(chat-to-all "enabling bor hunting")
 (set-strategic-number sn-enable-boar-hunting 1)
 (set-strategic-number sn-minimum-number-hunters 0)
 )
@@ -369,6 +439,7 @@
 (defrule
 (unit-type-count-total villager < 23)
 =>
+(chat-to-all "disable boar hunting as 23 vils")
 (set-strategic-number sn-enable-boar-hunting 2)
 )
 
@@ -379,6 +450,7 @@
 	(dropsite-min-distance boar-hunting < 32)
 	(dropsite-min-distance boar-hunting > -1)
 =>
+   (chat-to-all "disable bor hunting as there is some mismatch in distance")
 	(set-strategic-number sn-minimum-boar-hunt-group-size 2)
 	(set-strategic-number sn-enable-boar-hunting 2)
 	(set-strategic-number sn-maximum-food-drop-distance 35)
@@ -388,19 +460,21 @@
 (defrule
 	(civilian-population > 25)
 	(or	(dropsite-min-distance boar-hunting < 0)
-		(dropsite-min-distance boar-hunting > 32))
+		(dropsite-min-distance boar-hunting > 40))
 	(strategic-number sn-enable-boar-hunting == 2)
 	(unit-type-count villager-hunter == 0)
 =>
+   (chat-to-all "boar hunting")
 	(set-strategic-number sn-enable-boar-hunting 1))
 
 
 (defrule
-	(dropsite-min-distance deer-hunting <  40)
+	(dropsite-min-distance deer-hunting < 50)
 	(civilian-population > 10)
 	(unit-type-count villager-hunter == 0)
-	(strategic-number sn-enable-boar-hunting != 2)
+	;(strategic-number sn-enable-boar-hunting != 2)
 =>
+   (chat-to-all "deer hunting")
 	(set-strategic-number sn-minimum-number-hunters 6))
 
 
@@ -440,6 +514,7 @@
 	(dropsite-min-distance boar-hunting < 8)
 	(research-completed ri-loom)
 =>
+   (chat-to-all "malicious boar hunting")
 	(set-strategic-number sn-minimum-number-hunters 8)
 	(set-strategic-number sn-maximum-hunt-drop-distance 12)
 )
@@ -716,8 +791,21 @@
 
 ;========================================== basic eco ======================================
 
+
+;(defrule
+;(unit-type-count-total villager <= 8)
+;(up-compare-goal mysheep <= 0 )
+;=>
+;(set-strategic-number sn-food-gatherer-percentage 94)
+;(set-strategic-number sn-wood-gatherer-percentage 6)
+;(set-strategic-number sn-camp-max-distance 20)
+;(set-strategic-number sn-minimum-dropsite-buffer 200)
+;(disable-self)
+;)
+
+
 (defrule
-(unit-type-count-total villager < 9)
+(unit-type-count-total villager <= 8)
 (building-type-count-total town-center > 0)
 =>
 (chat-to-all "first build oder - concentrate in food")
@@ -730,22 +818,36 @@
 
 (defrule
 (current-age == dark-age)
-(unit-type-count-total villager > 8)
+(unit-type-count-total villager > 11)
 =>
 (chat-to-all "second build oder - put some in wood")
+(up-drop-resources food c:< 5)
+(up-retask-gatherers wood c: 3)
 (set-strategic-number sn-food-gatherer-percentage 85)
 (set-strategic-number sn-gold-gatherer-percentage 0)
 (set-strategic-number sn-wood-gatherer-percentage 15)
 (set-strategic-number sn-stone-gatherer-percentage 0)
-;set-strategic-number sn-maximum-town-size 17
 (disable-self)
 )
+
+;(defrule
+;(current-age == dark-age)
+;(unit-type-count-total villager > 9)
+;=>
+;(chat-to-all "first set last wood vil")
+;(set-strategic-number sn-food-gatherer-percentage 85)
+;(set-strategic-number sn-gold-gatherer-percentage 0)
+;(set-strategic-number sn-wood-gatherer-percentage 15)
+;(set-strategic-number sn-stone-gatherer-percentage 0)
+;(set-strategic-number sn-maximum-town-size 17);
+;(disable-self)
+;)
 
 
 
 (defrule
 (current-age == dark-age)
-(unit-type-count-total villager > 10)
+(unit-type-count-total villager > 20)
 =>
 (chat-to-all "third build oder - put more in wood")
 (set-strategic-number sn-food-gatherer-percentage 60)
@@ -756,18 +858,18 @@
 (disable-self)
 )
 
-(defrule
-(unit-type-count-total villager > 14)
-(current-age == dark-age)
-=>
-(chat-to-all "build oder - more in food")
-(set-strategic-number sn-food-gatherer-percentage 75)
-(set-strategic-number sn-wood-gatherer-percentage 25)
-(disable-self)
-)
+;(defrule
+;(unit-type-count-total villager > 22)
+;(current-age == dark-age)
+;=>
+;(chat-to-all "build oder - more in food")
+;(set-strategic-number sn-food-gatherer-percentage 75)
+;(set-strategic-number sn-wood-gatherer-percentage 25)
+;(disable-self)
+;)
 
 (defrule
-(unit-type-count-total villager > 20)
+(unit-type-count-total villager > 22)
 (goal 8 2)
 (current-age == dark-age)
 =>
@@ -996,6 +1098,7 @@
 (chat-to-all "building lumber first lumber")
 (set-strategic-number sn-camp-max-distance 50)
 (build lumber-camp)
+(disable-self)
 )
 
 (defrule
@@ -1008,6 +1111,7 @@
 (chat-to-all "building second lumber")
 (set-strategic-number sn-camp-max-distance 50)
 (build lumber-camp)
+(disable-self)
 )
 
 (defrule
@@ -1132,9 +1236,11 @@
 (train trebuchet)
 )
 (defrule
-(unit-type-count-total villager-hunter > 0)
+(true)
 =>
+(chat-to-all "loom")
 (research ri-loom)
+(disable-self)
 )
 
 
@@ -1157,8 +1263,9 @@
 (defrule
 (can-build mill)
 (unit-type-count-total villager-forager > 0)
-(game-time > 120)
+;(game-time > 120)
 (building-type-count-total mill < 1)
+(up-pending-objects c:< mill < 1)
 =>
 (build mill)
 )
@@ -1197,15 +1304,6 @@
 (up-retask-gatherers villager-forager c:< 3)
 (chat-to-player my-player-number "retask to sheep")
 (disable-self)
-)
-(defrule
-(can-build mill)
-(unit-type-count-total villager-forager > 3) ;If lots of foragers, go mill first
-(resource-found food)
-(building-type-count-total mill < 1)
-(up-pending-objects c:< mill < 1)
-=>
-(build mill)
 )
 
 
@@ -1407,7 +1505,7 @@
 )
 
 (defrule
-(unit-type-count-total villager > 22)
+;(unit-type-count-total villager > 22)
 (can-build mill)
 (building-type-count-total mill < 2)
 (unit-type-count-total villager-hunter > 0)
@@ -1530,7 +1628,7 @@
 (defrule
 (food-amount < 50)
 (up-pending-objects c:< villager < 1)
-(unit-type-count-total villager-hunter > 2)
+;(unit-type-count-total villager-hunter > 2)
 (game-time < 1500)
 =>
 (up-drop-resources food c:< 8)
@@ -2700,6 +2798,7 @@
 (defrule
 (true)
 =>
+(chat-to-all "researching loom")
 (research ri-loom)
 )
 
