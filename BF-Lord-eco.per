@@ -85,7 +85,6 @@
 (building-type-count-total farm greater-than 5)
 (can-build town-center)
 =>
-(set-strategic-number sn-town-center-placement lumber-camp)
 (chat-to-all "basic tc build oder - tc in wood")
 (build town-center)
 )
@@ -97,13 +96,39 @@
 (can-build town-center)
 =>
 (chat-to-all "build 2 gold tc")
-(set-strategic-number sn-town-center-placement mining-camp)
 (set-strategic-number sn-gold-defend-priority 7)
 (build town-center)
-(disable-self)
 )
 
 ;=============================
+
+
+
+;============================ researches ==============================
+
+(defrule
+(up-research-status c:< feudal-age > 1)
+;(goal 8 3)
+=>
+(research ri-double-bit-axe)
+;(research ri-coinage)
+(research ri-horse-collar)
+)
+
+(defrule
+(unit-type-count villager > 65)
+=>
+(research ri-wheel-barrow)
+)
+
+(defrule
+(unit-type-count-total villager > 70)
+=>
+(research ri-hand-cart)
+)
+
+
+;========================================
 
 #load-if-not-defined DEATH-MATCH
 
@@ -496,6 +521,13 @@
 )
 
 (defrule
+(building-type-count-total town-center < 3)
+(strategic-number sn-camp-max-distance < 50)
+=>
+(set-strategic-number sn-town-center-placement lumber-camp)
+)
+
+(defrule
 (building-type-count-total town-center > 2)
 (strategic-number sn-camp-max-distance < 50)
 =>
@@ -507,6 +539,7 @@
 =>
 (set-strategic-number sn-town-center-placement 0)
 )
+
 
 (defrule
 (or(cc-players-unit-type-count gaia 66 < 9)
@@ -543,7 +576,8 @@
 )
 
 (defrule
-(goal 16 2)
+(current-age == imperial-age)
+;(goal 16 2)
 =>
 (research ri-scale-mail)
 (research ri-chain-mail)
@@ -560,7 +594,8 @@
 )
 
 (defrule
-(goal 16 2)
+(current-age == imperial-age)
+;(goal 16 2)
 =>
 (research ri-padded-archer-armor)
 (research ri-bloodlines)
@@ -925,12 +960,6 @@
 )
 
 (defrule
-(unit-type-count-total villager > 50)
-=>
-(research ri-hand-cart)
-)
-
-(defrule
 (can-build house)
 (building-type-count-total town-center > 0)
 (housing-headroom < 3)
@@ -979,16 +1008,20 @@
 (build lumber-camp)
 )
 
-
 (defrule
 (current-age == castle-age)
 (can-build lumber-camp)
+(building-type-count-total lumber-camp < 3)
 (up-pending-objects c:< lumber-camp < 1)
+(dropsite-min-distance wood > 6)
+(dropsite-min-distance wood < 255)
+(game-time > 300)
+(game-time < 1200)
 =>
-(chat-to-all "building second lumber")
-(set-strategic-number sn-camp-max-distance 50)
+(set-strategic-number sn-camp-max-distance 40)
 (build lumber-camp)
 )
+
 
 ;===========================================================================
 
@@ -1053,6 +1086,7 @@
 ;Useless techs
 
 (defrule
+(current-age == imperial-age)
 (game-time > 3600)
 (food-amount > 5000)
 (wood-amount > 5000)
@@ -1079,12 +1113,6 @@
 =>
 (research imperial-age)
 (set-strategic-number 88 4)
-)
-
-(defrule
-(unit-type-count villager > 34)
-=>
-(research ri-wheel-barrow)
 )
 
 (defrule
@@ -1411,13 +1439,6 @@
 
 (defrule
 (goal 8 3)
-=>
-(research ri-double-bit-axe)
-(research ri-coinage)
-)
-
-(defrule
-(goal 8 3)
 (current-age-time > 250)
 =>
 (research ri-horse-collar)
@@ -1529,6 +1550,7 @@
 (defrule
 (true)
 =>
+(up-assign-builders c:< lumber-camp c:< 4)
 (up-assign-builders c:< town-center c:< 4)
 (up-assign-builders c:< castle c:< 3)
 (up-assign-builders c:< 621 c:< 4)
@@ -1558,12 +1580,12 @@
 
 
 
-(defrule
-(strategic-number 88 > 2)
-=>
-(research ri-double-bit-axe)
-(research ri-horse-collar)
-)
+;(defrule
+;(strategic-number 88 > 2)
+;=>
+;(research ri-double-bit-axe)
+;(research ri-horse-collar)
+;)
 
 (defrule
 (current-age >= castle-age)
