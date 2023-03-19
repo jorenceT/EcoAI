@@ -714,6 +714,8 @@
 )
 
 
+;========================================== basic eco ======================================
+
 (defrule
 (unit-type-count-total villager < 9)
 (building-type-count-total town-center > 0)
@@ -847,11 +849,11 @@
 (defrule
 (current-age == castle-age)
 (building-type-count-total town-center >= 4)
-(current-age-time < 20)
 =>
 (chat-to-all "build oder - more to food as ther is more or equal to 4 tc")
 (set-strategic-number sn-food-gatherer-percentage 54)
 (set-strategic-number sn-gold-gatherer-percentage 7)
+;(set-strategic-number sn-gold-gatherer-count 7)
 (set-strategic-number sn-wood-gatherer-percentage 34)
 (set-strategic-number sn-stone-gatherer-percentage 5)
 (set-strategic-number sn-camp-max-distance 50)
