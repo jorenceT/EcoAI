@@ -77,9 +77,35 @@
 )
 
 
+; ====== TC building basic ==================
+
+(defrule
+(resource-found wood)
+(building-type-count-total town-center < 3)
+(building-type-count-total farm greater-than 5)
+(can-build town-center)
+=>
+(set-strategic-number sn-town-center-placement lumber-camp)
+(chat-to-all "basic tc build oder - tc in wood")
+(build town-center)
+)
+
+(defrule
+(resource-found gold)
+(building-type-count-total town-center < 5)
+(building-type-count-total farm greater-than 19)
+(can-build town-center)
+=>
+(chat-to-all "build 2 gold tc")
+(set-strategic-number sn-town-center-placement mining-camp)
+(set-strategic-number sn-gold-defend-priority 7)
+(build town-center)
+(disable-self)
+)
+
+;=============================
+
 #load-if-not-defined DEATH-MATCH
-
-
 
 (defrule
    (true)
@@ -743,7 +769,16 @@
 
 (defrule
 (current-age == castle-age)
-(building-type-count-total town-center < 4)
+(building-type-count-total town-center < 3)
+(building-type-count-total farm less-than 6)
+(can-build farm)
+=>
+(build farm)
+)
+
+(defrule
+(current-age == castle-age)
+(building-type-count-total town-center == 3)
 (building-type-count-total farm less-than 20)
 (can-build farm)
 =>
@@ -777,7 +812,7 @@
 (defrule
 (current-age == castle-age)
 (building-type-count-total town-center >= 4)
-(current-age-time < 400)
+(current-age-time < 20)
 =>
 (chat-to-all "build oder - more to food as ther is more or equal to 4 tc")
 (set-strategic-number sn-food-gatherer-percentage 54)
@@ -926,21 +961,21 @@
 (up-pending-objects c:< lumber-camp < 1)
 (building-type-count-total lumber-camp < 1)
 (unit-type-count villager > 7)
-(dropsite-min-distance wood > 4)
-(dropsite-min-distance wood < 255)
 =>
+(chat-to-all "building lumber first lumber")
+(set-strategic-number sn-camp-max-distance 50)
 (build lumber-camp)
 )
 
 (defrule
 (current-age == feudal-age)
+(resource-found wood)
 (unit-type-count villager > 19)
 (building-type-count-total lumber-camp < 2)
 (up-pending-objects c:< lumber-camp < 1)
-(dropsite-min-distance wood > 4)
-(dropsite-min-distance wood < 255)
 =>
-(set-strategic-number sn-camp-max-distance 30)
+(chat-to-all "building second lumber")
+(set-strategic-number sn-camp-max-distance 50)
 (build lumber-camp)
 )
 
@@ -948,14 +983,25 @@
 (defrule
 (current-age == castle-age)
 (can-build lumber-camp)
-(dropsite-min-distance wood > 4)
-(dropsite-min-distance wood < 255)
 (up-pending-objects c:< lumber-camp < 1)
 =>
+(chat-to-all "building second lumber")
+(set-strategic-number sn-camp-max-distance 50)
 (build lumber-camp)
 )
 
 ;===========================================================================
+
+;=========================== building castle==============================
+
+(defrule
+(building-type-count town-center >= 5)
+(building-type-count-total castle < 5)
+=>
+(build castle)
+)
+
+;=================================
 
 
 (defrule
@@ -1488,17 +1534,17 @@
 (up-assign-builders c:< 621 c:< 4)
 )
 
-(defrule
-(can-build town-center)
-(game-time > 1000)
-(building-type-count-total town-center < 6)
-(up-pending-objects c:< town-center < 5)
-(or(food-amount < 666)
-(gold-amount < 500))
-=>
-(set-strategic-number sn-gold-defend-priority 7) ;Try to drop the tc at gold
-(build town-center)
-)
+;(defrule
+;(can-build town-center)
+;(game-time > 1000)
+;(building-type-count-total town-center < 6)
+;(up-pending-objects c:< town-center < 5)
+;(or(food-amount < 666)
+;(gold-amount < 500))
+;=>
+;(set-strategic-number sn-gold-defend-priority 7) ;Try to drop the tc at gold
+;(build town-center)
+;)
 
 
 (defrule
@@ -1822,14 +1868,6 @@
 )
 
 (defrule
-(building-type-count-total town-center < 5)
-(can-build town-center)
-(up-pending-objects c:< town-center < 3)
-=>
-(build town-center)
-)
-
-(defrule
 (building-type-count-total town-center < 1)
 (game-time < 1800)
 =>
@@ -1858,12 +1896,6 @@
 (unit-type-count-total monk < 2)
 =>
 (train monk)
-)
-(defrule
-(can-build castle)
-(not(civ-selected turkish))
-=>
-(build castle)
 )
 
 
@@ -1898,7 +1930,7 @@
 (food-amount < 1000)
 (goal 8 2)
 =>
-(chat-to-allies "3 I have a minor shortage of food")
+(chat-to-all "3 I have a minor shortage of food")
 )
 
 (defrule
@@ -1906,7 +1938,7 @@
 (wood-amount < 1000)
 (goal 8 2)
 =>
-(chat-to-allies "4 I have a minor shortage of wood")
+(chat-to-all "4 I have a minor shortage of wood")
 )
 
 (defrule
@@ -1914,7 +1946,7 @@
 (gold-amount < 1000)
 (goal 8 2)
 =>
-(chat-to-allies "5 I have a minor shortage of gold")
+(chat-to-all "5 I have a minor shortage of gold")
 )
 
 (defrule
@@ -1922,7 +1954,7 @@
 (food-amount < 100)
 (goal 8 2)
 =>
-(chat-to-allies "103 I have a moderate shortage of food")
+(chat-to-all "103 I have a moderate shortage of food")
 )
 
 (defrule
@@ -1930,7 +1962,7 @@
 (wood-amount < 100)
 (goal 8 2)
 =>
-(chat-to-allies "104 I have a moderate shortage of wood")
+(chat-to-all "104 I have a moderate shortage of wood")
 )
 
 (defrule
@@ -1938,7 +1970,7 @@
 (gold-amount < 50)
 (goal 8 2)
 =>
-(chat-to-allies "105 I have a moderate shortage of gold")
+(chat-to-all "105 I have a moderate shortage of gold")
 )
 
 (defrule
@@ -3010,12 +3042,6 @@
 )
 
 (defrule
-(building-type-count-total castle < 1)
-=>
-(build castle)
-)
-
-(defrule
 (can-build bombard-tower)
 =>
 (build-forward bombard-tower)
@@ -3115,12 +3141,6 @@
 (up-pending-objects c:< siege-workshop < 2)
 =>
 (build siege-workshop)
-)
-
-(defrule
-(building-type-count-total castle < 1)
-=>
-(build castle)
 )
 
 (defrule
@@ -3448,11 +3468,7 @@
 (build siege-workshop)
 )
 
-(defrule
-(building-type-count-total castle < 5)
-=>
-(build castle)
-)
+
 
 (defrule
 (can-build bombard-tower)
@@ -3585,12 +3601,6 @@
 )
 
 (defrule
-(building-type-count-total castle < 5)
-=>
-(build castle)
-)
-
-(defrule
 (can-build bombard-tower)
 (building-type-count-total bombard-tower < 4)
 =>
@@ -3687,12 +3697,6 @@
 (can-build siege-workshop)
 =>
 (build siege-workshop)
-)
-
-(defrule
-(building-type-count-total castle < 5)
-=>
-(build castle)
 )
 
 (defrule
@@ -4822,14 +4826,15 @@
 (build monastery)
 )
 
-(defrule
-(can-build town-center)
-(building-type-count-total town-center < 8)
-(up-pending-objects c:< town-center < 8)
-(unit-type-count-total villager > 11)
-=>
-(build town-center)
-)
+;(defrule
+;(can-build town-center)
+;(building-type-count-total town-center < 8)
+;(up-pending-objects c:< town-center < 8)
+;(unit-type-count-total villager > 11)
+;=>
+;(chat-to-all "building more tcs")
+;(build town-center)
+;)
 
 (defrule
 (unit-type-count-total monk < 2)
@@ -4844,13 +4849,6 @@
 (up-pending-objects c:< archery-range < 1)
 =>
 (build archery-range)
-)
-
-(defrule
-(can-build castle)
-(unit-type-count-total villager > 17)
-=>
-(build castle)
 )
 
 (defrule
