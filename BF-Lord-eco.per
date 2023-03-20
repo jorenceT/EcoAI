@@ -199,14 +199,9 @@
 ;)
 
   (defrule
-	(current-age == dark-age)
-	(up-compare-goal gl-boar-hunting-stage <= 0)
-	(unit-type-count villager-hunter == 0)
-	(nand	(building-type-count house == 0)
-		(up-pending-objects c: house > 0))
-	(dropsite-min-distance live-boar < 15)
-	(goal gl-villagers-to-start-boar-hunt 3)
-	(up-compare-goal gl-my-villager-count g:>= gl-villagers-to-start-boar-hunt)
+	(dropsite-min-distance boar-hunting != -1)
+	;(dropsite-min-distance live-boar >= 8)
+   (unit-type-count-total villager >= 10)
 =>
    (chat-to-all "dark boar hunting")
 	(set-strategic-number sn-maximum-hunt-drop-distance 33)
@@ -218,8 +213,9 @@
 )
 
 (defrule
-	(up-compare-goal gl-boar-hunting-stage <= 0)
+	(dropsite-min-distance boar-hunting != -1)
 	(dropsite-min-distance live-boar >= 8)
+   (unit-type-count-total villager >= 10)
 	(dropsite-min-distance boar-hunting < 8)
 	(goal gl-villagers-to-start-boar-hunt 3)
 =>
@@ -230,13 +226,13 @@
 	(disable-self)
 )
 
-(defrule
-   (dropsite-min-distance boar-hunting != -1) ; Some boars available
-=>
-   (chat-to-all "found a boar setting new set of 8 hunters")
-   (set-strategic-number sn-minimum-boar-hunt-group-size 8)
-   (chat-local-to-self "[Hunting] Boar hunt group size now 8")
-)
+;(defrule
+;   (dropsite-min-distance boar-hunting != -1) ; Some boars available
+;=>
+;   (chat-to-all "found a boar setting new set of 8 hunters")
+;   (set-strategic-number sn-minimum-boar-hunt-group-size 8)
+ ;  (chat-local-to-self "[Hunting] Boar hunt group size now 8")
+;)
 
 ; Change to deer/boar hunting, but this might include late boars or even boars we failed to get in Dark Age (eg; were just outside TC range)
 (defrule
@@ -288,7 +284,7 @@
    )
    (dropsite-min-distance boar-hunting != -1) ; Some boars available
 =>
-   (chat-to-all "found a boar setting new set of 8 hunters")
+   ;(chat-to-all "found a boar setting new set of 8 hunters")
    (set-strategic-number sn-minimum-boar-hunt-group-size 8)
    (chat-local-to-self "[Hunting] Boar hunt group size now 8")
 )
@@ -304,7 +300,7 @@
       (dropsite-min-distance boar-hunting == -1) ; No boar
    )
 =>
-   (chat-to-all "release the hunters as no boar found")
+   ;(chat-to-all "release the hunters as no boar found")
    (set-strategic-number sn-minimum-boar-hunt-group-size 0)
    (chat-local-to-self "[Hunting] Boar hunt group size now 0.")
 )
@@ -818,6 +814,7 @@
 (defrule
 (unit-type-count-total villager > 20)
 (dropsite-min-distance boar-hunting != -1)
+(building-type-count-total mill less-than 2)
 =>
 (chat-to-all "deer hunting 2")
 (set-strategic-number sn-preferred-mill-placement deer-hunting)
