@@ -200,7 +200,8 @@
 
   (defrule
 	(dropsite-min-distance boar-hunting != -1)
-	;(dropsite-min-distance live-boar >= 8)
+	(dropsite-min-distance live-boar <= 70)
+   ;(dropsite-min-distance boar-hunting < 40)
    (unit-type-count-total villager >= 10)
 =>
    (chat-to-all "dark boar hunting")
@@ -813,15 +814,17 @@
 
 (defrule
 (unit-type-count-total villager > 20)
-(dropsite-min-distance boar-hunting != -1)
 (building-type-count-total mill less-than 2)
+(not (and (dropsite-min-distance boar-hunting != -1)
+(dropsite-min-distance live-boar <= 70)))
 =>
 (chat-to-all "deer hunting 2")
 (set-strategic-number sn-preferred-mill-placement deer-hunting)
 (set-strategic-number sn-preferred-mill-placement 1)
 (up-modify-sn sn-mill-max-distance c:max 27)
 (build mill)
-(set-strategic-number sn-maximum-hunt-drop-distance 17)  
+(set-strategic-number sn-maximum-hunt-drop-distance 17)
+(set-strategic-number sn-minimum-number-hunters 6)
 )
 
 (defrule
