@@ -234,10 +234,10 @@
 ; Change to deer/boar hunting, but this might include late boars or even boars we failed to get in Dark Age (eg; were just outside TC range)
 (defrule
    (strategic-number sn-enable-boar-hunting == 2) ; Set to Boar only
-   (or
+   ;(or
       ;(dropsite-min-distance boar-hunting s:> sn-maximum-hunt-drop-distance) ; Have we any boar within 30 distance?
       (dropsite-min-distance boar-hunting == -1) ; No boars available
-   )
+   ;)
 =>
    (chat-to-all "no bor avilable")
    (chat-local-to-self "[Hunting] No boars detected within range, turning off forced Boar hunting.")
