@@ -815,6 +815,7 @@
 (defrule
 (unit-type-count-total villager > 20)
 (building-type-count-total mill less-than 2)
+(dropsite-min-distance deer-hunting != -1)
 (not (and (dropsite-min-distance boar-hunting != -1)
 (dropsite-min-distance live-boar <= 70)))
 =>
