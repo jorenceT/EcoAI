@@ -235,7 +235,7 @@
 (defrule
    (strategic-number sn-enable-boar-hunting == 2) ; Set to Boar only
    (or
-      (dropsite-min-distance boar-hunting s:> sn-maximum-hunt-drop-distance) ; Have we any boar within 30 distance?
+      ;(dropsite-min-distance boar-hunting s:> sn-maximum-hunt-drop-distance) ; Have we any boar within 30 distance?
       (dropsite-min-distance boar-hunting == -1) ; No boars available
    )
 =>
