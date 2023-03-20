@@ -1,0 +1,47 @@
+ (set-strategic-number sn-enable-boar-hunting 0) 
+ ; Default 0. Means Deer hunting only (thus the Boar SNs take no effect), 
+ set to 1 once we start boar hunting and
+  2 when we finish.
+
+  so 2 means end bor and 1 mean start bor
+
+
+  for bor hunt to work u need 3 sheep and 20 vil on start with dark age 
+
+
+
+  deer will work if mroe than 20 vils
+
+
+  bor hunting from barb AI:
+  (defrule
+	(current-age == dark-age)
+	(up-compare-goal gl-boar-hunting-stage <= 0)
+	(unit-type-count villager-hunter == 0)
+	(nand	(building-type-count house == 0)
+		(up-pending-objects c: house > 0))
+	(dropsite-min-distance live-boar < 15)
+	(goal gl-villagers-to-start-boar-hunt 3)
+	(up-compare-goal gl-my-villager-count g:>= gl-villagers-to-start-boar-hunt)
+=>
+   (chat-to-all "dark boar hunting")
+	(set-strategic-number sn-maximum-hunt-drop-distance 33)
+	(set-strategic-number sn-minimum-boar-lure-group-size 1)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 6)
+	(set-strategic-number sn-enable-boar-hunting 2)
+	(set-strategic-number sn-minimum-number-hunters 1)
+	(up-retask-gatherers food c: 1)
+)
+
+(defrule
+	(up-compare-goal gl-boar-hunting-stage <= 0)
+	(dropsite-min-distance live-boar >= 8)
+	(dropsite-min-distance boar-hunting < 8)
+	(goal gl-villagers-to-start-boar-hunt 3)
+=>
+   (chat-to-all "boar hunting 2")
+	(set-strategic-number sn-maximum-hunt-drop-distance 10)
+	(set-strategic-number sn-minimum-boar-lure-group-size 4565)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 0)
+	(disable-self)
+)

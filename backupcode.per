@@ -1,0 +1,57 @@
+;(defrule
+;(true)
+;=>
+;(chat-to-all "set to wood")
+;(up-assign-builders c:< lumber-camp c:< 4)
+;(up-assign-builders c:< town-center c:< 4)
+;(up-assign-builders c:< castle c:< 3)
+;(up-assign-builders c:< 621 c:< 4)
+;)
+
+
+(defrule
+   (strategic-number sn-minimum-boar-hunt-group-size == 0)
+   ; We've got one in range OR we're eating one (since we accidentilly killed it far away)
+   (or
+      (dropsite-min-distance boar-hunting < 8) ; Any boars near our TC/Mill (ie being led towards it)
+      (and
+         (up-remaining-boar-amount != 65535) ; We're eating
+         (up-remaining-boar-amount > 100) ; Plenty left
+      )
+   )
+   (dropsite-min-distance boar-hunting != -1) ; Some boars available
+=>
+   (chat-to-all "found a boar setting new set of 8 hunters")
+   (set-strategic-number sn-minimum-boar-hunt-group-size 8)
+   (chat-local-to-self "[Hunting] Boar hunt group size now 8")
+)
+
+
+
+(defrule
+   (strategic-number sn-minimum-boar-hunt-group-size == 8)
+   ; Too far away (and not eating) or no boar available at all.
+   (or
+      (and
+         (dropsite-min-distance boar-hunting > 8) ; Too far away
+         (up-remaining-boar-amount == 65535) ; We're NOT eating
+      )
+      (dropsite-min-distance boar-hunting == -1) ; No boar
+   )
+=>
+   (chat-to-all "release the hunters as no boar found")
+   (set-strategic-number sn-minimum-boar-hunt-group-size 0)
+   (chat-local-to-self "[Hunting] Boar hunt group size now 0.")
+)
+
+
+; Turn on and off hunting group when the boar is near
+; Turn hunt group on
+(defrule
+   (dropsite-min-distance boar-hunting != -1) ; Some boars available
+=>
+   (chat-to-all "found a boar setting new set of 8 hunters")
+   (set-strategic-number sn-minimum-boar-hunt-group-size 8)
+   (chat-local-to-self "[Hunting] Boar hunt group size now 8")
+)
+; No boar/boar far away, turn hunt group off
