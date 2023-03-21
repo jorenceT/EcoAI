@@ -202,7 +202,7 @@
 	(dropsite-min-distance boar-hunting != -1)
 	(dropsite-min-distance live-boar <= 70)
    ;(dropsite-min-distance boar-hunting < 40)
-   (unit-type-count-total villager >= 10)
+   (unit-type-count-total villager >= 14)
 =>
    (chat-to-all "dark boar hunting")
 	(set-strategic-number sn-maximum-hunt-drop-distance 33)
@@ -216,7 +216,7 @@
 (defrule
 	(dropsite-min-distance boar-hunting != -1)
 	(dropsite-min-distance live-boar >= 8)
-   (unit-type-count-total villager >= 10)
+   (unit-type-count-total villager >= 14)
 	(dropsite-min-distance boar-hunting < 8)
 	(goal gl-villagers-to-start-boar-hunt 3)
 =>
@@ -226,14 +226,6 @@
 	(set-strategic-number sn-minimum-boar-hunt-group-size 0)
 	(disable-self)
 )
-
-;(defrule
-;   (dropsite-min-distance boar-hunting != -1) ; Some boars available
-;=>
-;   (chat-to-all "found a boar setting new set of 8 hunters")
-;   (set-strategic-number sn-minimum-boar-hunt-group-size 8)
- ;  (chat-local-to-self "[Hunting] Boar hunt group size now 8")
-;)
 
 ; Change to deer/boar hunting, but this might include late boars or even boars we failed to get in Dark Age (eg; were just outside TC range)
 (defrule
@@ -482,15 +474,6 @@
 =>
    (chat-to-all "boar hunting")
 	(set-strategic-number sn-enable-boar-hunting 1))
-
-;(defrule
-;	(dropsite-min-distance deer-hunting < 70)
-;	(civilian-population > 10)
-;	(unit-type-count villager-hunter == 0)
-	;(strategic-number sn-enable-boar-hunting != 2)
-;=>
-;  (chat-to-all "deer hunting")
-;	(set-strategic-number sn-minimum-number-hunters 6))
 
 (defrule
 	(true)
@@ -771,6 +754,7 @@
 (game-time > 600)
 (game-time < 1200)
 =>
+(chat-to-all "explore with vil3")
 (set-strategic-number sn-minimum-civilian-explorers 1)
 (set-strategic-number sn-cap-civilian-explorers 1)
 (set-strategic-number sn-total-number-explorers 3)
@@ -853,21 +837,6 @@
 (set-strategic-number sn-stone-gatherer-percentage 0)
 (disable-self)
 )
-
-;(defrule
-;(current-age == dark-age)
-;(unit-type-count-total villager > 9)
-;=>
-;(chat-to-all "first set last wood vil")
-;(set-strategic-number sn-food-gatherer-percentage 85)
-;(set-strategic-number sn-gold-gatherer-percentage 0)
-;(set-strategic-number sn-wood-gatherer-percentage 15)
-;(set-strategic-number sn-stone-gatherer-percentage 0)
-;(set-strategic-number sn-maximum-town-size 17);
-;(disable-self)
-;)
-
-
 
 (defrule
 (current-age == dark-age)
@@ -1166,26 +1135,6 @@
 )
 
 ;=================================
-
-
-(defrule
-(can-research feudal-age)
-(or(unit-type-count-total villager > 29)
-(food-amount > 680))
-(or(building-type-count-total barracks > 0)
-(wood-amount > 120))
-=>
-(research feudal-age)
-(set-strategic-number 88 2)
-)
-
-(defrule
-(goal 8 3)
-(can-research feudal-age)
-=>
-(research feudal-age)
-(set-strategic-number 88 2)
-)
 
 (defrule
 (unit-type-count-total villager > 27)
@@ -2832,6 +2781,7 @@
 =>
 (chat-to-all "researching loom")
 (research ri-loom)
+(disable-self)
 )
 
 
@@ -4796,6 +4746,7 @@
 (defrule
 (game-time < 2)
 =>
+(chat-to-all "explore with vil 1")
 (set-strategic-number sn-minimum-civilian-explorers 2)
 (set-strategic-number sn-cap-civilian-explorers 2)
 (set-strategic-number sn-total-number-explorers 4)

@@ -55,3 +55,199 @@
    (chat-local-to-self "[Hunting] Boar hunt group size now 8")
 )
 ; No boar/boar far away, turn hunt group off
+
+
+(defrule
+(game-time < 2)
+=>
+(set-strategic-number sn-minimum-civilian-explorers 2)
+(set-strategic-number sn-cap-civilian-explorers 2)
+(set-strategic-number sn-total-number-explorers 4)
+(set-strategic-number sn-number-explore-groups 3)
+(set-strategic-number sn-initial-exploration-required 0)
+(set-strategic-number sn-percent-civilian-gatherers 0)
+(set-strategic-number sn-percent-civilian-explorers 66)
+(set-strategic-number sn-percent-civilian-builders 33)
+(set-strategic-number sn-home-exploration-time 0)
+(set-strategic-number sn-cap-civilian-builders 9001)
+(set-strategic-number sn-enable-new-building-system 1)
+)
+
+(defrule
+(game-time < 2)
+=>
+(set-strategic-number sn-minimum-civilian-explorers 2)
+(set-strategic-number sn-cap-civilian-explorers 2)
+(set-strategic-number sn-total-number-explorers 4)
+(set-strategic-number sn-number-explore-groups 3)
+(set-strategic-number sn-initial-exploration-required 0)
+(set-strategic-number sn-percent-civilian-gatherers 0)
+(set-strategic-number sn-percent-civilian-explorers 66)
+(set-strategic-number sn-percent-civilian-builders 33)
+(set-strategic-number sn-home-exploration-time 0)
+(set-strategic-number sn-cap-civilian-builders 9001)
+(set-strategic-number sn-enable-new-building-system 1)
+)
+
+(defrule
+(game-time < 35)
+=>
+(set-strategic-number sn-minimum-civilian-explorers 2)
+(set-strategic-number sn-cap-civilian-explorers 2)
+(set-strategic-number sn-total-number-explorers 4)
+(set-strategic-number sn-number-explore-groups 3)
+(set-strategic-number sn-initial-exploration-required 0)
+(set-strategic-number sn-percent-civilian-gatherers 0)
+(set-strategic-number sn-percent-civilian-explorers 66)
+(set-strategic-number sn-percent-civilian-builders 33)
+(set-strategic-number sn-home-exploration-time 475)
+(set-strategic-number sn-cap-civilian-builders 9001)
+)
+
+
+(defrule
+(building-type-count-total town-center > 0)
+(players-military-population my-player-number < 1)
+(game-time > 600)
+(game-time < 1200)
+=>
+(set-strategic-number sn-minimum-civilian-explorers 1)
+(set-strategic-number sn-cap-civilian-explorers 1)
+(set-strategic-number sn-total-number-explorers 3)
+(set-strategic-number sn-number-explore-groups 2)
+(set-strategic-number sn-initial-exploration-required 0)
+(set-strategic-number sn-percent-civilian-gatherers 0)
+(set-strategic-number sn-percent-civilian-explorers 66)
+(set-strategic-number sn-percent-civilian-builders 33)
+)
+
+
+(defrule
+(can-research feudal-age)
+(or(unit-type-count-total villager > 29)
+(food-amount > 680))
+(or(building-type-count-total barracks > 0)
+(wood-amount > 120))
+=>
+(research feudal-age)
+(set-strategic-number 88 2)
+)
+
+(defrule
+(goal 8 3)
+(can-research feudal-age)
+=>
+(research feudal-age)
+(set-strategic-number 88 2)
+)
+4
+
+
+(defrule
+(game-time < 35)
+=>
+(chat-to-all "explore with vil 2")
+(set-strategic-number sn-minimum-civilian-explorers 2)
+(set-strategic-number sn-cap-civilian-explorers 2)
+(set-strategic-number sn-total-number-explorers 4)
+(set-strategic-number sn-number-explore-groups 3)
+(set-strategic-number sn-initial-exploration-required 0)
+(set-strategic-number sn-percent-civilian-gatherers 0)
+(set-strategic-number sn-percent-civilian-explorers 66)
+(set-strategic-number sn-percent-civilian-builders 33)
+(set-strategic-number sn-home-exploration-time 475)
+(set-strategic-number sn-cap-civilian-builders 9001)
+)
+
+
+(defrule
+   (strategic-number sn-minimum-boar-lure-group-size == 1) ; Currently on
+   (up-remaining-boar-amount != 65535) ; We're eating
+   (up-remaining-boar-amount > 0) ; Plenty left
+=>
+   (chat-to-all "stop luring as we are eating boar")
+   (set-strategic-number sn-minimum-boar-lure-group-size 1000) ; Turn off
+   (chat-local-to-self "[Hunting] Luring will stop (We're eating a boar)")
+)
+
+; Minimum hunter rules - set to higher if we have an active boar on forced boar hunting.
+(defrule
+   (strategic-number sn-enable-boar-hunting == 2) ; Set to Boar only
+   (up-remaining-boar-amount != 65535) ; Are we eating a boar?
+   (up-remaining-boar-amount > 0) ; Got much left?
+   (strategic-number sn-minimum-number-hunters == 1)
+=>
+   (chat-to-all "need to force to bor but are we eating any boar already and is there another boar")
+   (set-strategic-number sn-minimum-number-hunters 8)
+   (chat-local-to-self "[Hunting] Hunting a boar; putting 8 villagers on it minimum.")
+)
+
+
+(defrule
+(unit-type-count-total villager > 20)
+(strategic-number sn-minimum-number-hunters <= 0)
+(building-type-count-total mill less-than 2)
+(dropsite-min-distance deer-hunting != -1)
+;check if boar is avilable
+;(not (and (dropsite-min-distance boar-hunting != -1)
+;(and (dropsite-min-distance live-boar <= 70)
+;(up-remaining-boar-amount <= 0))
+;)
+;)
+=>
+(chat-to-all "deer hunting 2 1")
+(set-strategic-number sn-preferred-mill-placement deer-hunting)
+(set-strategic-number sn-preferred-mill-placement 9)
+(up-modify-sn sn-mill-max-distance c:max 27)
+(build mill)
+(set-strategic-number sn-maximum-hunt-drop-distance 17)
+(set-strategic-number sn-minimum-number-hunters 9)
+)
+
+
+(defrule
+	(dropsite-min-distance deer <= 70)
+	(civilian-population > 10)
+	(unit-type-count villager-hunter == 0)
+   (dropsite-min-distance deer-hunting != -1)
+	;(strategic-number sn-enable-boar-hunting != 2)
+=>
+  (chat-to-all "deer hunting")
+  (up-retask-gatherers 907 c: 405)
+  (set-strategic-number sn-minimum-number-hunters 6))
+
+
+
+  
+;(defrule
+   
+;   (unit-type-count-total villager >= 10) ; This is static and set to 8 since we always need 8 for most efficient hunting
+ ;  (strategic-number sn-enable-boar-hunting != 3) ; Boar only?
+ ;  (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance) ; New check, have we any boar within 50 distance?
+ ;  (dropsite-min-distance boar-hunting != -1) ; Some boars available
+;   (dropsite-min-distance boar-hunting != 255) ; Some boars available (Redundant with first check)
+;=>
+ ;  (chat-to-all "hunting first boar")
+;   (chat-local-to-self "[Hunting] Villagers at 8 with loom and a Boar in range, forced Boar hunting!")
+ ;  (set-strategic-number sn-enable-boar-hunting 3) ; Boar only
+ ;  (set-strategic-number sn-minimum-number-hunters 1) ; increased so priority is increased.
+  ; (set-strategic-number sn-minimum-boar-lure-group-size 1) ; Increase lure group size.
+;)
+
+
+;(defrule
+ ;(dropsite-min-distance boar-hunting == -1)
+  ;(not (dropsite-min-distance live-boar <= 70))
+;=>
+;   (chat-to-all "reset hunting")
+;   (set-strategic-number sn-minimum-boar-hunt-group-size 0)
+ ;  (chat-local-to-self "[Hunting] Boar hunt group size now 8")
+;)
+
+
+(defrule
+  (not (dropsite-min-distance live-boar <= 70))
+=>
+   (set-strategic-number sn-minimum-number-hunters 0)
+   (set-strategic-number sn-enable-boar-hunting 1)
+)
