@@ -63,6 +63,7 @@
 (defconst gl-boar-hunting-stage 157)
 (defconst gl-villagers-to-start-boar-hunt 64); The number of villagers to allow boar hunting
 (defconst gl-my-villager-count 32)
+(defconst counter-boar 89)
 
 (defrule
 (current-age == feudal-age)
@@ -143,7 +144,7 @@
    (true)
 =>
    (chat-to-all "first set")
-   (set-strategic-number sn-enable-boar-hunting 0) ; Default 0. Means Deer hunting only (thus the Boar SNs take no effect), set to 1 once we start boar hunting and 2 when we finish.
+   (set-strategic-number sn-enable-boar-hunting 1) ; Default 0. Means Deer hunting only (thus the Boar SNs take no effect), set to 1 once we start boar hunting and 2 when we finish.
    (set-strategic-number sn-minimum-number-hunters 0) ; Default 0. This is set later to increase priority of hunting (if 0 it will put it below forage and farming).
    (set-strategic-number sn-minimum-boar-hunt-group-size 0) ; Default 5. Alteredd below to be correctly 8 at the right time.
    (set-strategic-number sn-minimum-boar-lure-group-size 1000) ; Default 0. Altered below to be correctly 1 at the right time.
@@ -172,16 +173,20 @@
    (disable-self)
 )
 
-
-;(defrule
-   ;(dropsite-min-distance boar-hunting == -1)
-   ;(not (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance)) ; New check, have we any boar within 50 distance?
-;=>
-   ;(chat-to-all "hunting boar de-active")
-   ;(set-strategic-number sn-enable-boar-hunting 2) ; Boar only
-   ;(disable-self)
-;)
-
+(defrule
+  	(or (dropsite-min-distance boar-hunting == -1) 
+   (dropsite-min-distance live-boar > 70))
+   ;(up-remaining-boar-amount < 10)
+=>
+   (chat-to-all "reset after boar")
+ (chat-to-all "first set")
+   (set-strategic-number sn-enable-boar-hunting 0) ; Default 0. Means Deer hunting only (thus the Boar SNs take no effect), set to 1 once we start boar hunting and 2 when we finish.
+   (set-strategic-number sn-minimum-number-hunters 0) ; Default 0. This is set later to increase priority of hunting (if 0 it will put it below forage and farming).
+   (set-strategic-number sn-minimum-boar-hunt-group-size 0) ; Default 5. Alteredd below to be correctly 8 at the right time.
+   (set-strategic-number sn-minimum-boar-lure-group-size 1000) ; Default 0. Altered below to be correctly 1 at the right time.
+   ; Drop distance, 30 is a good default, most boar are set to spawn up to 22 distance away, and this adds a bit extra for wandering.
+   (set-strategic-number sn-maximum-hunt-drop-distance 26) ; Default -1!
+)
 
 ;(defrule
    
@@ -199,6 +204,7 @@
 ;)
 
   (defrule
+  ;(taunt-detected any-ally 24)
 	(dropsite-min-distance boar-hunting != -1)
 	(dropsite-min-distance live-boar <= 70)
    ;(dropsite-min-distance boar-hunting < 40)
@@ -209,9 +215,37 @@
 	(set-strategic-number sn-minimum-boar-lure-group-size 1)
 	(set-strategic-number sn-minimum-boar-hunt-group-size 6)
 	(set-strategic-number sn-enable-boar-hunting 2)
+   (set-strategic-number counter-boar 2)
 	(set-strategic-number sn-minimum-number-hunters 1)
 	(up-retask-gatherers food c: 1)
+   (disable-self)
 )
+
+  (defrule
+   (up-remaining-boar-amount < 100)
+=>
+   (chat-to-all "activate bor hunting for second boar")
+   (set-strategic-number sn-enable-boar-hunting 1) ; Boar only
+   (disable-self)
+)
+
+  (defrule
+  ;(taunt-detected any-ally 24)
+	(dropsite-min-distance boar-hunting != -1)
+	(dropsite-min-distance live-boar <= 70)
+   ;(dropsite-min-distance boar-hunting < 40)
+   (up-remaining-boar-amount < 90)
+=>
+   (chat-to-all "dark boar hunting 2")
+	(set-strategic-number sn-maximum-hunt-drop-distance 33)
+	(set-strategic-number sn-minimum-boar-lure-group-size 1)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 6)
+	(set-strategic-number sn-enable-boar-hunting 2)
+	(set-strategic-number sn-minimum-number-hunters 1)
+	(up-retask-gatherers food c: 1)
+   (disable-self)
+)
+
 
 (defrule
 	(dropsite-min-distance boar-hunting != -1)
@@ -277,7 +311,7 @@
    )
    (dropsite-min-distance boar-hunting != -1) ; Some boars available
 =>
-   ;(chat-to-all "found a boar setting new set of 8 hunters")
+   (chat-to-all "found a boar setting new set of 8 hunters")
    (set-strategic-number sn-minimum-boar-hunt-group-size 8)
    (chat-local-to-self "[Hunting] Boar hunt group size now 8")
 )
@@ -293,7 +327,7 @@
       (dropsite-min-distance boar-hunting == -1) ; No boar
    )
 =>
-   ;(chat-to-all "release the hunters as no boar found")
+   (chat-to-all "release the hunters as no boar found")
    (set-strategic-number sn-minimum-boar-hunt-group-size 0)
    (chat-local-to-self "[Hunting] Boar hunt group size now 0.")
 )
@@ -797,20 +831,37 @@
 ;========================================== basic eco ======================================
 
 (defrule
+;(taunt-detected any-ally 14)
 (unit-type-count-total villager > 20)
 (building-type-count-total mill less-than 2)
 (dropsite-min-distance deer-hunting != -1)
 (not (and (dropsite-min-distance boar-hunting != -1)
 (dropsite-min-distance live-boar <= 70)))
 =>
-(chat-to-all "deer hunting 2")
+(chat-to-all "deer hunting 2 1")
 (set-strategic-number sn-preferred-mill-placement deer-hunting)
 (set-strategic-number sn-preferred-mill-placement 1)
 (up-modify-sn sn-mill-max-distance c:max 27)
 (build mill)
 (set-strategic-number sn-maximum-hunt-drop-distance 17)
-(set-strategic-number sn-minimum-number-hunters 6)
+(set-strategic-number sn-minimum-number-hunters 9)
+;(disable-self)
 )
+
+;(defrule
+;(taunt-detected any-ally 24)
+;(unit-type-count-total villager > 20)
+;(building-type-count-total mill == 2)
+;(dropsite-min-distance deer-hunting != -1)
+;(not (or (dropsite-min-distance boar-hunting != -1)
+;(or (dropsite-min-distance live-boar <= 70)
+;(up-remaining-boar-amount < 0)
+;)))
+;=>
+;(chat-to-all "deer hunting 2 2")
+;(set-strategic-number sn-maximum-hunt-drop-distance 17)
+;(set-strategic-number sn-minimum-number-hunters 6)
+;)
 
 (defrule
 (unit-type-count-total villager <= 8)
@@ -1484,7 +1535,7 @@
 (defrule
 ;(unit-type-count-total villager > 22)
 (can-build mill)
-(building-type-count-total mill < 2)
+(building-type-count-total mill < 1)
 (unit-type-count-total villager-hunter > 0)
 (up-pending-objects c:< mill < 1)
 =>

@@ -1,0 +1,38 @@
+To deer hunt we have to stop bor hunt and then reset it so doing default stop now need to resmove it later and try
+the rest has to happen after bor is hunted
+
+to stop 2 mill reducing one mill in deer hunt
+
+reset seems working -> need to make rest after bor hunting before deer hunting
+now the problem is doing 2 bor case any issue?
+
+
+the belive condition should work but its having some issue the deer hunt is not getting triggered:
+;(taunt-detected any-ally 14)
+(unit-type-count-total villager > 20)
+(building-type-count-total mill < 2)
+(dropsite-min-distance deer-hunting != -1)
+;(dropsite-min-distance boar-hunting == -1)
+(or (dropsite-min-distance boar-hunting == -1) 
+   (dropsite-min-distance live-boar > 70))
+(up-remaining-boar-amount < 10)
+
+setting old condition
+
+
+
+belove code was good but for reseting while the first bor is completed we are going to use only HP check if HP low reset the hunting:
+(defrule
+  	(or (dropsite-min-distance boar-hunting == -1) 
+   (dropsite-min-distance live-boar > 70))
+   ;(up-remaining-boar-amount < 10)
+=>
+   (chat-to-all "reset after boar")
+ (chat-to-all "first set")
+   (set-strategic-number sn-enable-boar-hunting 0) ; Default 0. Means Deer hunting only (thus the Boar SNs take no effect), set to 1 once we start boar hunting and 2 when we finish.
+   (set-strategic-number sn-minimum-number-hunters 0) ; Default 0. This is set later to increase priority of hunting (if 0 it will put it below forage and farming).
+   (set-strategic-number sn-minimum-boar-hunt-group-size 0) ; Default 5. Alteredd below to be correctly 8 at the right time.
+   (set-strategic-number sn-minimum-boar-lure-group-size 1000) ; Default 0. Altered below to be correctly 1 at the right time.
+   ; Drop distance, 30 is a good default, most boar are set to spawn up to 22 distance away, and this adds a bit extra for wandering.
+   (set-strategic-number sn-maximum-hunt-drop-distance 26) ; Default -1!
+)

@@ -50,3 +50,35 @@
 (unit-type-count-total villager > 9)  ; unit count check 
 (current-age == dark-age) ;  age check
 (building-type-count-total farm less-than 4) ; building count check
+
+  (defrule
+	(dropsite-min-distance boar-hunting != -1)
+   (dropsite-min-distance live-boar <= 70)
+=>
+   (chat-to-all "dark boar ava")
+)
+(defrule
+	(or (dropsite-min-distance boar-hunting == -1) 
+   (dropsite-min-distance live-boar > 70))
+   =>
+   (chat-to-all "dark boar not avilable")
+)
+
+
+timer:
+
+(defrule
+(game-time > 600)
+=>
+(enable-timer 22 600) ;every 10 mins ask for stuff
+(disable-self)
+)
+
+(defrule
+(timer-triggered 22)
+(food-amount < 1000)
+(goal 8 2)
+=>
+(chat-to-all "3 I have a minor shortage of food")
+)
+
