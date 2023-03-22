@@ -36,3 +36,19 @@ belove code was good but for reseting while the first bor is completed we are go
    ; Drop distance, 30 is a good default, most boar are set to spawn up to 22 distance away, and this adds a bit extra for wandering.
    (set-strategic-number sn-maximum-hunt-drop-distance 26) ; Default -1!
 )
+
+
+we dont need it as there is already 2 bor hunting 
+(defrule
+	(dropsite-min-distance boar-hunting != -1)
+	(dropsite-min-distance live-boar >= 8)
+   (unit-type-count-total villager >= 14)
+	(dropsite-min-distance boar-hunting < 8)
+	(goal gl-villagers-to-start-boar-hunt 3)
+=>
+   (chat-to-all "boar hunting 2")
+	(set-strategic-number sn-maximum-hunt-drop-distance 10)
+	(set-strategic-number sn-minimum-boar-lure-group-size 4565)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 0)
+	(disable-self)
+)

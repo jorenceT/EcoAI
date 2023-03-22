@@ -64,6 +64,7 @@
 (defconst gl-villagers-to-start-boar-hunt 64); The number of villagers to allow boar hunting
 (defconst gl-my-villager-count 32)
 (defconst counter-boar 89)
+(defconst deer-hunthing-started 985)
 
 (defrule
 (current-age == feudal-age)
@@ -71,8 +72,8 @@
 (building-type-count-total market < 1)
 (up-pending-objects c:< market < 1)
 =>
-(build market)
 (up-assign-builders c:< market c:< 2)
+(build market)
 )
 
 (defrule
@@ -81,6 +82,7 @@
 (building-type-count-total blacksmith < 1)
 (up-pending-objects c:< blacksmith < 1)
 =>
+(up-assign-builders c:< market c:< 1)
 (build blacksmith)
 )
 
@@ -176,7 +178,7 @@
 (defrule
   	(or (dropsite-min-distance boar-hunting == -1) 
    (dropsite-min-distance live-boar > 70))
-   ;(up-remaining-boar-amount < 10)
+   (strategic-number counter-boar == 0)
 =>
    (chat-to-all "reset after boar")
  (chat-to-all "first set")
@@ -186,22 +188,8 @@
    (set-strategic-number sn-minimum-boar-lure-group-size 1000) ; Default 0. Altered below to be correctly 1 at the right time.
    ; Drop distance, 30 is a good default, most boar are set to spawn up to 22 distance away, and this adds a bit extra for wandering.
    (set-strategic-number sn-maximum-hunt-drop-distance 26) ; Default -1!
+   (disable-self)
 )
-
-;(defrule
-   
-;   (unit-type-count-total villager >= 10) ; This is static and set to 8 since we always need 8 for most efficient hunting
- ;  (strategic-number sn-enable-boar-hunting != 3) ; Boar only?
- ;  (dropsite-min-distance boar-hunting s:< sn-maximum-hunt-drop-distance) ; New check, have we any boar within 50 distance?
- ;  (dropsite-min-distance boar-hunting != -1) ; Some boars available
-;   (dropsite-min-distance boar-hunting != 255) ; Some boars available (Redundant with first check)
-;=>
- ;  (chat-to-all "hunting first boar")
-;   (chat-local-to-self "[Hunting] Villagers at 8 with loom and a Boar in range, forced Boar hunting!")
- ;  (set-strategic-number sn-enable-boar-hunting 3) ; Boar only
- ;  (set-strategic-number sn-minimum-number-hunters 1) ; increased so priority is increased.
-  ; (set-strategic-number sn-minimum-boar-lure-group-size 1) ; Increase lure group size.
-;)
 
   (defrule
   ;(taunt-detected any-ally 24)
@@ -215,13 +203,14 @@
 	(set-strategic-number sn-minimum-boar-lure-group-size 1)
 	(set-strategic-number sn-minimum-boar-hunt-group-size 6)
 	(set-strategic-number sn-enable-boar-hunting 2)
-   (set-strategic-number counter-boar 2)
+   (set-strategic-number counter-boar 1)
 	(set-strategic-number sn-minimum-number-hunters 1)
 	(up-retask-gatherers food c: 1)
    (disable-self)
 )
 
   (defrule
+   (strategic-number counter-boar == 1)
    (up-remaining-boar-amount < 100)
 =>
    (chat-to-all "activate bor hunting for second boar")
@@ -230,11 +219,10 @@
 )
 
   (defrule
-  ;(taunt-detected any-ally 24)
 	(dropsite-min-distance boar-hunting != -1)
 	(dropsite-min-distance live-boar <= 70)
-   ;(dropsite-min-distance boar-hunting < 40)
    (up-remaining-boar-amount < 90)
+   (unit-type-count-total villager >= 14)
 =>
    (chat-to-all "dark boar hunting 2")
 	(set-strategic-number sn-maximum-hunt-drop-distance 33)
@@ -242,23 +230,9 @@
 	(set-strategic-number sn-minimum-boar-hunt-group-size 6)
 	(set-strategic-number sn-enable-boar-hunting 2)
 	(set-strategic-number sn-minimum-number-hunters 1)
+   (set-strategic-number counter-boar 0)
 	(up-retask-gatherers food c: 1)
    (disable-self)
-)
-
-
-(defrule
-	(dropsite-min-distance boar-hunting != -1)
-	(dropsite-min-distance live-boar >= 8)
-   (unit-type-count-total villager >= 14)
-	(dropsite-min-distance boar-hunting < 8)
-	(goal gl-villagers-to-start-boar-hunt 3)
-=>
-   (chat-to-all "boar hunting 2")
-	(set-strategic-number sn-maximum-hunt-drop-distance 10)
-	(set-strategic-number sn-minimum-boar-lure-group-size 4565)
-	(set-strategic-number sn-minimum-boar-hunt-group-size 0)
-	(disable-self)
 )
 
 ; Change to deer/boar hunting, but this might include late boars or even boars we failed to get in Dark Age (eg; were just outside TC range)
@@ -275,17 +249,17 @@
    (set-strategic-number sn-minimum-number-hunters 0) ; Set back to 0, lower the priority of hunting.
 )
 ; Turn on and off luring if we have a low boar
-(defrule
-   (strategic-number sn-minimum-boar-lure-group-size == 1000) ; Currently off
-   (or
-      (up-remaining-boar-amount == 65535) ; No eating
-      (up-remaining-boar-amount < 50) ; Not much left
-   )
-=>
-   (chat-to-all "is bor avilable the  set bor huting true")
-   (set-strategic-number sn-minimum-boar-lure-group-size 1) ; set to 1
-   (chat-local-to-self "[Hunting] Luring will commence (Low or no boar)")
-)
+;(defrule
+  ; (strategic-number sn-minimum-boar-lure-group-size == 1000) ; Currently off
+   ;(or
+     ; (up-remaining-boar-amount == 65535) ; No eating
+      ;(up-remaining-boar-amount < 50) ; Not much left
+  ; )
+;=>
+   ;(chat-to-all "is bor avilable the  set bor huting true")
+   ;(set-strategic-number sn-minimum-boar-lure-group-size 1) ; set to 1
+   ;(chat-local-to-self "[Hunting] Luring will commence (Low or no boar)")
+;)
 ; Turn on and off luring if we have a low boar
 (defrule
    (strategic-number sn-minimum-boar-lure-group-size == 1) ; Currently on
@@ -831,37 +805,22 @@
 ;========================================== basic eco ======================================
 
 (defrule
-;(taunt-detected any-ally 14)
 (unit-type-count-total villager > 20)
 (building-type-count-total mill less-than 2)
 (dropsite-min-distance deer-hunting != -1)
-(not (and (dropsite-min-distance boar-hunting != -1)
-(dropsite-min-distance live-boar <= 70)))
+;check if boar is avilable
+(dropsite-min-distance boar-hunting == -1)
+(dropsite-min-distance live-boar > 70)
+(up-remaining-boar-amount <= 0)
 =>
 (chat-to-all "deer hunting 2 1")
 (set-strategic-number sn-preferred-mill-placement deer-hunting)
-(set-strategic-number sn-preferred-mill-placement 1)
+(set-strategic-number sn-preferred-mill-placement 9)
 (up-modify-sn sn-mill-max-distance c:max 27)
 (build mill)
 (set-strategic-number sn-maximum-hunt-drop-distance 17)
 (set-strategic-number sn-minimum-number-hunters 9)
-;(disable-self)
 )
-
-;(defrule
-;(taunt-detected any-ally 24)
-;(unit-type-count-total villager > 20)
-;(building-type-count-total mill == 2)
-;(dropsite-min-distance deer-hunting != -1)
-;(not (or (dropsite-min-distance boar-hunting != -1)
-;(or (dropsite-min-distance live-boar <= 70)
-;(up-remaining-boar-amount < 0)
-;)))
-;=>
-;(chat-to-all "deer hunting 2 2")
-;(set-strategic-number sn-maximum-hunt-drop-distance 17)
-;(set-strategic-number sn-minimum-number-hunters 6)
-;)
 
 (defrule
 (unit-type-count-total villager <= 8)
@@ -942,6 +901,13 @@
 (defrule
 (current-age == feudal-age)
 (up-compare-goal mysheep <= 0)
+;no boar:
+(dropsite-min-distance boar-hunting == -1)
+(dropsite-min-distance live-boar > 70)
+(up-remaining-boar-amount <= 0)
+;no deer
+(dropsite-min-distance deer-hunting == -1)
+(dropsite-min-distance deer-hunting > 70)
 (building-type-count-total farm less-than 4)
 (can-build farm)
 (building-type-count-total market > 0)
@@ -1305,19 +1271,19 @@
 (build house)
 )
 
-(defrule
-(building-type-count mill < 1)
-(unit-type-count-total villager-forager > 1);1 vill 3 forage is ok
-(unit-type-count-total 594 < 3)
-(unit-type-count-total 833 < 3)
-=>
-(chat-to-all "set a new eco realted to hunting")
-(set-strategic-number sn-enable-boar-hunting 1)
-(set-strategic-number sn-minimum-number-hunters 2)
-(up-retask-gatherers villager-forager c:< 3)
-(chat-to-player my-player-number "retask to boar")
-(disable-self)
-)
+;(defrule
+;(building-type-count mill < 1)
+;(unit-type-count-total villager-forager > 1);1 vill 3 forage is ok
+;(unit-type-count-total 594 < 3)
+;(unit-type-count-total 833 < 3)
+;=>
+;(chat-to-all "set a new eco realted to hunting")
+;(set-strategic-number sn-enable-boar-hunting 1)
+;(set-strategic-number sn-minimum-number-hunters 2)
+;(up-retask-gatherers villager-forager c:< 3)
+;(chat-to-player my-player-number "retask to boar")
+;(disable-self)
+;)
 
 
 
