@@ -52,3 +52,27 @@ we dont need it as there is already 2 bor hunting
 	(set-strategic-number sn-minimum-boar-hunt-group-size 0)
 	(disable-self)
 )
+
+
+
+deer hunting is not getting executed still deer hunting is happening so going to do mill insted of below code as its not executing
+(defrule
+(unit-type-count-total villager > 20)
+(building-type-count-total mill less-than 2)
+(dropsite-min-distance deer-hunting != -1)
+;check if boar is avilable
+(dropsite-min-distance boar-hunting == -1)
+(dropsite-min-distance live-boar > 70)
+(up-remaining-boar-amount <= 0)
+=>
+(chat-to-all "deer hunting 2 1")
+(set-strategic-number sn-preferred-mill-placement deer-hunting)
+(set-strategic-number sn-preferred-mill-placement 9)
+(up-modify-sn sn-mill-max-distance c:max 27)
+(build mill)
+(set-strategic-number sn-maximum-hunt-drop-distance 17)
+(set-strategic-number sn-minimum-number-hunters 9)
+) 
+
+
+
