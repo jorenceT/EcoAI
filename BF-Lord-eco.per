@@ -303,6 +303,13 @@
 =>
    (chat-to-all "release the hunters as no boar found")
    (set-strategic-number sn-minimum-boar-hunt-group-size 0)
+   (chat-to-all "deer hunting 2 1")
+   (set-strategic-number sn-preferred-mill-placement deer-hunting)
+   (set-strategic-number sn-preferred-mill-placement 9)
+   (up-modify-sn sn-mill-max-distance c:max 27)
+   (build mill)
+   (set-strategic-number sn-maximum-hunt-drop-distance 17)
+   (set-strategic-number sn-minimum-number-hunters 9)
    (chat-local-to-self "[Hunting] Boar hunt group size now 0.")
 )
 
