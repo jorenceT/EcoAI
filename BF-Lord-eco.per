@@ -894,6 +894,7 @@
 (defrule
 (current-age == feudal-age)
 (unit-type-count-total villager > 25)
+(gold-amount >= 200)
 (resource-found stone)
 =>
 (chat-to-all "build oder - change gold to stone")
