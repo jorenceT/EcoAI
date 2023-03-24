@@ -894,8 +894,10 @@
 (defrule
 (current-age == feudal-age)
 (unit-type-count-total villager > 25)
+(resource-found stone)
 =>
 (chat-to-all "build oder - change gold to stone")
+(build mining-camp)
 (set-strategic-number sn-food-gatherer-percentage 64)
 (set-strategic-number sn-gold-gatherer-percentage 0)
 (set-strategic-number sn-wood-gatherer-percentage 24)
@@ -907,19 +909,13 @@
 
 (defrule
 (current-age == feudal-age)
-(up-compare-goal mysheep <= 0)
-;no boar:
-(dropsite-min-distance boar-hunting == -1)
-(dropsite-min-distance live-boar > 70)
-(up-remaining-boar-amount <= 0)
-;no deer
-(dropsite-min-distance deer-hunting == -1)
-(dropsite-min-distance deer-hunting > 70)
-(building-type-count-total farm less-than 4)
+(not (resource-found food))
+(building-type-count-total farm less-than 7)
+(and (building-type-count-total market > 0) (building-type-count-total blacksmith > 0))
 (can-build farm)
-(building-type-count-total market > 0)
-(idle-farm-count < 3)
+;(idle-farm-count < 6)
 =>
+(chat-to-all "build famr as no food")
 (build farm)
 )
 
@@ -1161,18 +1157,22 @@
 ;=================================
 
 (defrule
-(unit-type-count-total villager > 27)
-(can-research castle-age)
-=>
-(research castle-age)
-(set-strategic-number 88 3)
+;(or 
+(current-age == castle-age)
+;(current-age == imperial-age)
+;)
+(game-time < 1500)
+(can-train villager)
+ =>
+(train villager)
 )
 
 (defrule
-(or (current-age == castle-age)
+(or 
+(up-research-status c:< imperial-age > 1)
 (current-age == imperial-age)
 )
-(unit-type-count-total villager < 120)
+(unit-type-count villager < 120)
 (can-train villager)
  =>
 (train villager)
@@ -1212,7 +1212,7 @@
 
 
 (defrule
-(unit-type-count-total villager > 80)
+(game-time > 1500)
 (can-research imperial-age)
 =>
 (research imperial-age)
@@ -1257,6 +1257,21 @@
 (set-strategic-number 88 2)
 )
 
+(defrule
+;(goal 8 3)
+(unit-type-count-total villager < 28)
+(current-age == feudal-age)
+=>
+(train villager)
+)
+
+(defrule
+(unit-type-count-total villager > 27)
+(can-research castle-age)
+=>
+(research castle-age)
+(set-strategic-number 88 3)
+)
 
 (defrule
 (can-build mill)
@@ -1369,24 +1384,6 @@
 =>
 (chat-to-enemies "trying to outboom me, hmpf, will see about that")
 (disable-self)
-)
-
-(defrule
-(players-current-age any-enemy == imperial-age)
-(strategic-number 88 < 4)
-(game-time > 1800)
-(game-time < 2700)
-(players-military-population any-enemy > 5)
-=>
-(chat-to-player every-enemy "please don't kill me, I havn't even researched imp :( ")
-(disable-self)
-)
-(defrule
-;(goal 8 3)
-(unit-type-count-total villager < 28)
-(current-age == feudal-age)
-=>
-(train villager)
 )
 
 (defrule
@@ -2154,7 +2151,6 @@
 (disable-timer 22)
 (enable-timer 22 600)
 )
-
 #load-if-defined CELTIC-CIV
 
 (defrule

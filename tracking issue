@@ -74,5 +74,10 @@ deer hunting is not getting executed still deer hunting is happening so going to
 (set-strategic-number sn-minimum-number-hunters 9)
 ) 
 
+v2:
+stone mine is not beeing build in proper position so given a fix 
+all going to wood after deer - giving a fix to make farm
+staying long in castle - giving a fix to it removing can research imp check
 
-
+need to fix:
+making army in castle sometimes 
