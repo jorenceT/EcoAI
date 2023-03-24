@@ -309,8 +309,7 @@
    (up-modify-sn sn-mill-max-distance c:max 27)
    (build mill)
    (set-strategic-number sn-maximum-hunt-drop-distance 17)
-   ;todo need to set to 15 from 9 
-   (set-strategic-number sn-minimum-number-hunters 9)
+   (set-strategic-number sn-minimum-number-hunters 15)
    (chat-local-to-self "[Hunting] Boar hunt group size now 0.")
 )
 
@@ -915,8 +914,7 @@
 (building-type-count-total farm less-than 7)
 (and (building-type-count-total market > 0) (building-type-count-total blacksmith > 0))
 (can-build farm)
-;todo need to uncomment this 
-;(idle-farm-count < 1)
+(idle-farm-count < 1)
 =>
 (chat-to-all "build famr as no food")
 (build farm)
@@ -927,8 +925,7 @@
 (building-type-count-total town-center < 3)
 (building-type-count-total farm less-than 6)
 (can-build farm)
-;todo need to uncomment this 
-;(idle-farm-count < 1)
+(idle-farm-count < 1)
 =>
 (build farm)
 )
@@ -938,7 +935,6 @@
 (building-type-count-total town-center == 3)
 (building-type-count-total farm less-than 20)
 (can-build farm)
-;todo need to uncomment this 
 (idle-farm-count < 1)
 =>
 (build farm)
@@ -949,7 +945,6 @@
 (building-type-count-total town-center > 4)
 (building-type-count-total farm less-than 40)
 (can-build farm)
-;todo need to uncomment this 
 (idle-farm-count < 1)
 =>
 (build farm)
