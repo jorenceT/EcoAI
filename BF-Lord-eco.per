@@ -883,27 +883,37 @@
 (goal 8 2)
 (current-age == dark-age)
 =>
-(chat-to-all "build oder -some in gold")
+(chat-to-all "build oder -some in stone")
+(build mining-camp)
 (set-strategic-number sn-food-gatherer-percentage 63)
-(set-strategic-number sn-gold-gatherer-percentage 15)
+(set-strategic-number sn-gold-gatherer-percentage 0)
 (set-strategic-number sn-wood-gatherer-percentage 22)
-(set-strategic-number sn-stone-gatherer-percentage 0)
+(set-strategic-number sn-stone-gatherer-percentage 15)
+(set-strategic-number sn-maximum-stone-drop-distance 20)
 (disable-self)
 )
 
 (defrule
 (current-age == feudal-age)
 (unit-type-count-total villager > 25)
-(gold-amount >= 200)
 (resource-found stone)
 =>
-(chat-to-all "build oder - change gold to stone")
-(build mining-camp)
 (set-strategic-number sn-food-gatherer-percentage 64)
 (set-strategic-number sn-gold-gatherer-percentage 0)
 (set-strategic-number sn-wood-gatherer-percentage 24)
 (set-strategic-number sn-stone-gatherer-percentage 12)
 (set-strategic-number sn-maximum-stone-drop-distance 20)
+(disable-self)
+)
+
+(defrule
+(current-age == feudal-age)
+(building-type-count-total market > 0)
+(building-type-count-total blacksmith > 0)
+(stone-amount >= 200)
+=>
+(chat-to-all "selling stone for castle")
+(sell-commodity stone)
 (disable-self)
 )
 
@@ -1323,18 +1333,6 @@
 (disable-self)
 )
 
-
-(defrule
-(strategic-number sn-gold-gatherer-percentage > 0)
-(can-build mining-camp)
-(resource-found gold)
-(building-type-count-total mining-camp < 1)
-(up-pending-objects c:< mining-camp < 1)
-=>
-(chat-to-all "found mine building mine")
-(build mining-camp)
-)
-
 (defrule
 (true)
 =>
@@ -1642,6 +1640,7 @@
 (resource-found gold)
 (dropsite-min-distance gold > 4)
 (dropsite-min-distance gold < 255)
+(current-age == imperial-age)
 =>
 (build mining-camp)
 (chat-to-player my-player-number "I FRIGGIN HATE IT WHEN THIS HAPPENS")
@@ -1809,15 +1808,15 @@
 (research ri-pikeman)
 )
 
-(defrule
-(strategic-number sn-stone-gatherer-percentage > 0)
-(can-build mining-camp)
-(resource-found stone)
-(building-type-count-total mining-camp < 2)
-(up-pending-objects c:< mining-camp < 1)
-=>
-(build mining-camp)
-)
+;(defrule
+;(strategic-number sn-stone-gatherer-percentage > 0)
+;(can-build mining-camp)
+;(resource-found stone)
+;(building-type-count-total mining-camp < 2)
+;(up-pending-objects c:< mining-camp < 1)
+;=>
+;(build mining-camp)
+;)
 
 (defrule
 (unit-type-count-total archer-line > 0)
@@ -5050,6 +5049,7 @@
 (unit-type-count-total villager > 40)
 (up-pending-objects c:< mining-camp < 1)
 (building-type-count-total mining-camp < 15)
+(current-age == imperial-age)
 =>
 (set-strategic-number sn-camp-max-distance 60)
 (build mining-camp)
